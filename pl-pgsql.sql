@@ -50,6 +50,8 @@ END $$ ;
 
 /*----------------------------------------------------------------------------------*/
 
+/* Reporting Messages and Errors */
+
 /* Error and Messages */
 DO $$ 
 BEGIN 
@@ -173,17 +175,6 @@ END $$ ;
 
 /*----------------------------------------------------------------------------------*/
 
-/* Exception Handling */
-DO $$
-BEGIN
-  SELECT * FROM fil;
-EXCEPTION
-  WHEN SQLSTATE '42P01' THEN
-      RAISE NOTICE 'There was an ERROR. %', SQLERRM;
-END $$ ;
-
-/*----------------------------------------------------------------------------------*/
-
 /* User Defined Function */
 
 /* Create Function */
@@ -288,6 +279,17 @@ END $$ ;
 
 /*----------------------------------------------------------------------------------*/
 
+/* Exception Handling */
+DO $$
+BEGIN
+  SELECT * FROM fil;
+EXCEPTION
+  WHEN SQLSTATE '42P01' THEN
+      RAISE NOTICE 'There was an ERROR. %', SQLERRM;
+END $$ ;
+
+/*----------------------------------------------------------------------------------*/
+
 /* Store Procedures */
 CREATE PROCEDURE myproc(IN p1 integer, OUT p2 integer, INOUT p3 integer) AS $$
 BEGIN
@@ -331,7 +333,7 @@ CREATE TABLE auditdata (
 CREATE OR REPLACE FUNCTION insert_log() 
 RETURNS TRIGGER	
 AS $$
-DECLARE
+DECLARE	
 	id_ int;
 BEGIN
 	INSERT INTO auditdata(log_text) VALUES ('New Person added with ID ' || new.id);
@@ -374,9 +376,9 @@ FROM film f INNER JOIN film_actor fa USING (film_id) INNER JOIN actor a USING (a
 /* Window Function */
 SELECT EMP_NAME, DEPT_NAME, SUM(SALARY) OVER(PARTITION BY DEPT_NAME ORDER BY SALARY) FROM EMPLOYEE
 SELECT *, ROUND(CUME_DIST() OVER (PARTITION BY GENDER ORDER BY SALARY)::NUMERIC ,2) FROM EMPLOYEE 																					-- CUME_DIST()
-SELECT *, ROUND(PERCENT_RANK() OVER (PARTITION BY GENDER ORDER BY SALARY)::NUMERIC ,2) FROM EMPLOYEE 																				--PERCENT_RANK()
-SELECT * FROM (SELECT payment_id, customer_id, staff_id, RANK() OVER(ORDER BY amount DESC) AS arank FROM payment) l WHERE arank <= 10 			--RANK()
-SELECT * FROM (SELECT payment_id, customer_id, staff_id, DENSE_RANK() OVER(ORDER BY amount DESC) AS arank FROM payment) l WHERE arank <= 2 	--DENSE_RANK()
+SELECT *, ROUND(PERCENT_RANK() OVER (PARTITION BY GENDER ORDER BY SALARY)::NUMERIC ,2) FROM EMPLOYEE 																				-- PERCENT_RANK()
+SELECT * FROM (SELECT payment_id, customer_id, staff_id, RANK() OVER(ORDER BY amount DESC) AS arank FROM payment) l WHERE arank <= 10 			-- RANK()
+SELECT * FROM (SELECT payment_id, customer_id, staff_id, DENSE_RANK() OVER(ORDER BY amount DESC) AS arank FROM payment) l WHERE arank <= 2 	-- DENSE_RANK()
 SELECT EMP_NAME, DEPT_NAME, GENDER, SALARY, LEAD(SALARY, 1, -1) OVER (PARTITION BY GENDER ORDER BY DEPT_NAME) FROM EMPLOYEE									-- LEAD()
 SELECT EMP_NAME, DEPT_NAME, GENDER, SALARY, LAG(SALARY, 1, -1) OVER (PARTITION BY GENDER ORDER BY DEPT_NAME) FROM EMPLOYEE									-- LAG()
 SELECT EMP_NAME, DEPT_NAME, GENDER, SALARY, ROW_NUMBER() OVER (PARTITION BY GENDER ORDER BY SALARY DESC) FROM EMPLOYEE											-- ROW_NUMBER()
@@ -396,7 +398,7 @@ SELECT CURRENT_TIMESTAMP(2)																		-- 2023-03-09 13:38:44.52+05:30
 SELECT DATE_PART('YEAR', CURRENT_TIMESTAMP)										-- 2023
 SELECT DATE_TRUNC('YEAR', CURRENT_DATE)												-- 2023-01-01 00:00:00+05:30
 SELECT LOCALTIME  																						-- 13:38:44.52166
-SELECT LOCALTIMESTAMP																					--2023-03-09 13:38:44.52166
+SELECT LOCALTIMESTAMP																					-- 2023-03-09 13:38:44.52166
 SELECT EXTRACT(SECOND FROM CURRENT_TIMESTAMP)									-- 44.521660
 SELECT EXTRACT(MONS FROM INTERVAL '21 years 3 mons 3 days')		-- 3
 SELECT TO_DATE('20120202', 'YYYYMMDD')												-- 2012-02-02
@@ -415,7 +417,7 @@ SELECT CONCAT_WS(',','A','B','C')									-- A,B,C
 SELECT FORMAT('HELLO %s', 'WORLD')								-- HELLO WORLD
 SELECT INITCAP('hello world')											-- Hello World
 SELECT LEFT('POSTGRESQL',4)												-- POST
-SELECT RIGHT('POSTGRESQL',3)											--SQL
+SELECT RIGHT('POSTGRESQL',3)											-- SQL
 SELECT LENGTH('POSTGRESQL')												-- 10
 SELECT LPAD('POSTGRES', 10, '/')									-- //POSTGRES
 SELECT RPAD('POSTGRES', 10, '/')									-- POSTGRES//
@@ -428,3 +430,4 @@ SELECT SUBSTRING ('POSTGRESQL', 2,3)							-- OST
 SELECT REPLACE('12345','1','0')										-- 02345
 SELECT MD5('POSTGRES')														-- 3844e1d819be690fa5e18b5c89281934
 
+/*----------------------------------------------------------------------------------*/
